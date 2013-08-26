@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="">
+<!--
+  <Resource name="jdbc/java" auth="Container" type="javax.sql.DataSource"
+               maxActive="10" maxIdle="4"  validationQuery="select 1"
+	       removeAbandoned="true"
+		removeAbandonedTimeout="120"
+              logAbandoned="true"
+              maxWait="60"
+               username="java" password="password" 
+               driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://localhost:3306/java?autoReconnect=true"/>
+-->
+<!--
+ <Resource name="jdbc/java" auth="Container" type="javax.sql.DataSource"
+               maxActive="10" maxIdle="4" 
+	       alidationQuery="select 1"
+	       removeAbandoned="true"
+		removeAbandonedTimeout="120"
+              logAbandoned="true"
+	       maxWait="60"
+               username="adminDQeK1A4" password="Q684KL7Gp9Ji" 
+               driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://127.3.167.1:3306/tomcat?autoReconnect=true"/>          
+-->
+<!-- tomcat7-->	
+
+<Resource name="jdbc/java"
+          auth="Container"
+          type="javax.sql.DataSource"
+          factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+          testWhileIdle="true"
+          testOnBorrow="true"
+          testOnReturn="false"
+          validationQuery="SELECT 1"
+          validationInterval="30000"
+          timeBetweenEvictionRunsMillis="30000"
+          maxActive="100"
+          minIdle="10"
+          maxWait="10000"
+          initialSize="10"
+	  fairQueue="true"
+          removeAbandonedTimeout="60"
+          removeAbandoned="true"
+          logAbandoned="true"
+          minEvictableIdleTimeMillis="30000"
+          jmxEnabled="true"
+          jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
+            org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
+          username="root"
+          password="willamette"
+          driverClassName="com.mysql.jdbc.Driver"
+          url="jdbc:mysql://localhost:3306/java"/>
+<!--
+<Resource name="jdbc/java"
+          auth="Container"
+          type="javax.sql.DataSource"
+          factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+          testWhileIdle="true"
+          testOnBorrow="true"
+          testOnReturn="false"
+          validationQuery="SELECT 1"
+          validationInterval="30000"
+          timeBetweenEvictionRunsMillis="30000"
+          maxActive="100"
+          minIdle="10"
+          maxWait="10000"
+          initialSize="10"
+	  fairQueue="true"
+          removeAbandonedTimeout="60"
+          removeAbandoned="true"
+          logAbandoned="true"
+          minEvictableIdleTimeMillis="30000"
+          jmxEnabled="true"
+          jdbcInterceptors="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;
+            org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer"
+          username="adminDQeK1A4"
+          password="Q684KL7Gp9Ji"
+          driverClassName="com.mysql.jdbc.Driver"
+          url="jdbc:mysql://127.3.167.1:3306/tomcat"/>
+ -->         
+</Context>
