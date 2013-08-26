@@ -4,13 +4,13 @@
  */
 package app.commands;
 
-import core.commands.BusinessTransactionCommand;
+import core.commands.SimpleFrontCommand;
 
 /**
  *
  * @author aldo
  */
-public class RegisterCommand extends BusinessTransactionCommand{
+public class RegisterCommand extends SimpleFrontCommand{
     public void process() {
         String method = method();
 	if(method.equals("new")){
@@ -18,6 +18,6 @@ public class RegisterCommand extends BusinessTransactionCommand{
 	}	
     }
     public void newRegistration(){
-        forward("/register/new.jsp");	
+        render("/register/new","homepage");	
     }
 }

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author aldo
  */
-public abstract class SimpleFrontCommand {
+public abstract class SimpleFrontCommand implements Command{
     protected ServletContext context;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
@@ -46,5 +46,9 @@ public abstract class SimpleFrontCommand {
     }
     protected String param(String name){
 	return request.getParameter(name);
+    }
+    protected void render(String view, String template){
+        request.setAttribute("p", view+".jsp");
+        forward("/templates/"+template+".jsp");	
     }
 }

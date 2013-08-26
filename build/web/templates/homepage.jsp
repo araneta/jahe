@@ -23,6 +23,17 @@
     </head>
     <body>
         <h1>Hello World!</h1>
+        <%
+        if(request.getAttribute("p")!=null)
+        { 
+          String p = (String)request.getAttribute("p");
+       %>    
+
+       <jsp:include page="<%=p%>"/>
+
+       <% 
+        }
+       %>
          <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="//code.jquery.com/jquery.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
