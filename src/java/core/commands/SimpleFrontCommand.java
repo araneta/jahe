@@ -4,18 +4,25 @@
  */
 package core.commands;
 
+import static core.commands.BusinessTransactionCommand.CSRF_TOKEN;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author aldo
  */
 public abstract class SimpleFrontCommand implements Command{
+    public static final String CSRF_TOKEN = "ctoken";
+    
     protected ServletContext context;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
@@ -50,5 +57,63 @@ public abstract class SimpleFrontCommand implements Command{
     protected void render(String view, String template){
         request.setAttribute("p", view+".jsp");
         forward("/templates/"+template+".jsp");	
+    }
+    private String getToken()
+    {
+        String DEFAULT_PRNG = "SHA1PRNG"; //algorithm to generate key
+        try{
+            SecureRandom sr = SecureRandom.getInstance(DEFAULT_PRNG);            
+            return "" + sr.nextLong();
+        }catch(NoSuchAlgorithmException e){
+            throw new RuntimeException(e);
+        }
+    }
+    protected void initializeCsfrToken() {
+        HttpSession httpSession = request.getSession();
+        String csrfToken = (String)httpSession.getAttribute(CSRF_TOKEN);
+        if(csrfToken==null || csrfToken.isEmpty()) {
+            httpSession.setAttribute(CSRF_TOKEN, getToken());
+        }
+    }
+    protected boolean checkCsrfToken(){
+        HttpSession httpSession = request.getSession(false);
+        String csrfToken = (String)httpSession.getAttribute(CSRF_TOKEN);
+        String reqCsrfToken = (String)request.getParameter(CSRF_TOKEN);
+        if(reqCsrfToken != null && csrfToken != null &&
+            !reqCsrfToken.isEmpty() && !csrfToken.isEmpty()
+            && csrfToken.equals(reqCsrfToken)) {
+            return true;
+        } else {
+            throw new RuntimeException("Invalid security Token");
+            //log("Invalid security Token. Supplied token: " + reqCsrfToken + ". Session token: " + csrfToken + ". IP: " + request.getRemoteAddr());
+            //return false;
+        }
+        //return false;
+    }
+    protected Object bind(Class c){
+        Object inst;
+        try{
+            inst = c.newInstance();
+        }catch(InstantiationException ie){
+            throw new RuntimeException(ie);
+        }catch(IllegalAccessException iae){
+            throw new RuntimeException(iae);
+        }
+        Field[] fields = c.getFields();
+        if(fields!=null){
+            for(Field f : fields){
+                Object o = request.getParameter(f.getName());
+                
+                if(o!=null){
+                    try{
+                        f.set(inst, o);
+                    }catch(IllegalAccessException e){
+                        throw new RuntimeException(e);
+                    }
+                }
+                
+            }
+        }
+        return inst;
     }
 }

@@ -1,9 +1,3 @@
-<%-- 
-    Document   : new
-    Created on : Aug 26, 2013, 8:23:19 PM
-    Author     : aldo
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
