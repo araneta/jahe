@@ -5,6 +5,7 @@
 package core.commands;
 
 import static core.commands.BusinessTransactionCommand.CSRF_TOKEN;
+import core.helpers.HttpForm;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.security.NoSuchAlgorithmException;
@@ -48,15 +49,33 @@ public abstract class SimpleFrontCommand implements Command{
 	     throw new RuntimeException(ex);
 	}
     }
+    protected void redirect(String url){
+        try{
+	    this.response.sendRedirect(url);
+	 }catch(IOException io){
+	     throw new RuntimeException(io);
+	 }
+    }
+    protected void badRequest(HttpForm form){
+        String referer = request.getHeader("Referer"); 
+        //request.setAttribute("_badform", form);
+        flash("_form",form);
+        redirect(referer);
+    }
     protected String method(){
 	return request.getParameter("methodname");
     }
     protected String param(String name){
 	return request.getParameter(name);
     }
-    protected void render(String view, String template){
-        request.setAttribute("p", view+".jsp");
+    protected void render(String view, String template){        
+        request.setAttribute("_p", view+".jsp");
         forward("/templates/"+template+".jsp");	
+    }
+    protected void render(HttpForm form, String view, String template){
+        if(request.getAttribute("_form")==null)
+            request.setAttribute("_form", form);
+        render(view,template);
     }
     private String getToken()
     {
@@ -100,6 +119,7 @@ public abstract class SimpleFrontCommand implements Command{
             throw new RuntimeException(iae);
         }
         Field[] fields = c.getFields();
+        
         if(fields!=null){
             for(Field f : fields){
                 Object o = request.getParameter(f.getName());
@@ -115,5 +135,9 @@ public abstract class SimpleFrontCommand implements Command{
             }
         }
         return inst;
+        
+    }
+    protected void flash(String key,Object message){
+        request.setAttribute("flash."+key, message);
     }
 }

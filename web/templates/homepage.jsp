@@ -3,7 +3,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <% 
+            String title = "untitled";
+            if(request.getAttribute("_title")!=null){
+                title = (String) request.getAttribute("_title");
+            }
+        %>
+        <title><%=title%></title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- Bootstrap -->
         <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -16,11 +22,10 @@
 
     </head>
     <body>
-        <h1>Hello World!</h1>
         <%
-        if(request.getAttribute("p")!=null)
+        if(request.getAttribute("_p")!=null)
         { 
-          String p = (String)request.getAttribute("p");
+          String p = (String)request.getAttribute("_p");
        %>    
 
        <jsp:include page="<%=p%>"/>

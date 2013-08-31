@@ -6,8 +6,7 @@ package app.commands;
 
 import app.entities.RegistrationForm;
 import core.commands.SimpleFrontCommand;
-import core.helpers.Form;
-import java.lang.reflect.Field;
+import core.helpers.HttpForm;
 
 /**
  *
@@ -25,13 +24,16 @@ public class RegisterCommand extends SimpleFrontCommand{
     }
     public void newRegistration(){
         initializeCsfrToken();
-        render("/register/new","homepage");	
+        //render("/register/new","homepage");
+        RegistrationForm f2 = new RegistrationForm();
+        f2.name = "pak bondan";
+        render(f2,"/register/new","homepage");
     }
     public void saveRegistration(){
         checkCsrfToken();        
         RegistrationForm f2 = (RegistrationForm)bind(RegistrationForm.class);
         if(!f2.validate()){
-            String err = f2.errorMessages();
+            badRequest(f2);
         }
         int y=0;
     }

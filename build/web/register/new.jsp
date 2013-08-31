@@ -1,7 +1,9 @@
+<jsp:useBean id="helper" class="core.helpers.BootstrapHelper" />
+<% helper.init(request,response); %>
 <form action="/register/save" method="post">
-    <input type="text" name="name" value="" />
-    <input type="text" name="email" value="" />
-    <input type="text" name="password" value="" />
-    <input type="text" name="ctoken" value=<%=request.getSession(false).getAttribute("ctoken") %> />
+    <%=helper.inputText("name", "Your name:")%>
+    <%=helper.inputText("email", "emaile:")%>
+    <%=helper.inputPassword("password", "password:")%>
+    <%=helper.csrfField()%>
     <input type="submit" value="Save" />
 </form>

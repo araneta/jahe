@@ -18,13 +18,13 @@ public class RegistrationForm extends HttpForm{
     
     public boolean validate(){
         
-        if(name.isEmpty()){
+        if(name==null || name.isEmpty()){
             addError("name","name is empty");            
         }
-        if(email.isEmpty()){
+        if(email==null || email.isEmpty()){
             addError("email","email is empty");            
         }
-        if(password.isEmpty()){
+        if(password==null || password.isEmpty()){
             addError("password","pass is empty");            
         }
         return !this.hasError();
