@@ -5,6 +5,7 @@
 package core.helpers;
 
 import app.mappers.BookMapper;
+import app.mappers.UserMapper;
 import core.db.ConnectionManager;
 import core.domainmodels.DomainObjectOOL;
 import core.mappers.AbstractMapperOOL;
@@ -44,6 +45,7 @@ public class AppSession {
     }
     protected void registerMappers(){
 	mappers.put(app.entities.Book.class, new BookMapper());
+        mappers.put(app.entities.User.class, new UserMapper());
     }
     
     public IdentityMap getIdentityMap(){

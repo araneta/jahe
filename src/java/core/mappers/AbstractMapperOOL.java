@@ -42,7 +42,7 @@ public abstract class AbstractMapperOOL {
 	    sb.append(columns[i]);	    	    
 	    sb.append(",");
 	}
-	sb.append("createdBy,created,versionid) values(");
+	sb.append("created_by,created_date,version_id) values(");
 	for (int i=0;i<columns.length;i++) {
 	    sb.append("?,");	    	    
 	}	
@@ -60,11 +60,11 @@ public abstract class AbstractMapperOOL {
 	    sb.append("=?,");
 	}
 	//sb.setLength(sb.length()-1);
-	sb.append(" modifiedBy=?");
+	sb.append(" modified_by=?");
 	sb.append(", modified=?");
-	sb.append(", versionid=?");
+	sb.append(", version_id=?");
 	
-	sb.append(" where id=? and versionid=?");
+	sb.append(" where id=? and version_id=?");
 	return sb.toString();
     }
     
@@ -92,7 +92,7 @@ public abstract class AbstractMapperOOL {
     private void buildStatements(){
 	loadSQL = "Select * from " + table +" where id=?";
 	deleteSQL = "Select * from " + table +" where id=?";
-	checkVersionSQL = "select version, modifiedby, modified from " + table +" where id =?";
+	checkVersionSQL = "select version, modified_by, modified from " + table +" where id =?";
     }
     protected abstract DomainObjectOOL doLoad(Long id,ResultSet rs)throws SQLException;
     protected abstract void doInsert(DomainObjectOOL subject, PreparedStatement stmt) throws SQLException;    
@@ -261,6 +261,46 @@ public abstract class AbstractMapperOOL {
 	}
 	return result;
 		
+    }
+      public List findMany(StatementSource source){
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
+        Connection conn = null;
+	try{
+            conn = ConnectionManager.INSTANCE.getConnection();
+            stmt = conn.prepareStatement(source.sql());
+	    
+	    for(int i=0; i<source.parameters().length; i++){
+		stmt.setObject(i+1, source.parameters()[i]);
+	    }
+	    rs = stmt.executeQuery();
+	    return loadAll(rs);
+	}catch(SQLException e){
+	    throw new RuntimeException(e);
+	}finally{
+	    close(rs,stmt,conn);
+	}
+    }
+    public DomainObjectOOL find(StatementSource source){
+	PreparedStatement stmt = null;
+	ResultSet rs = null;
+        Connection conn = null;
+	try{
+            conn = ConnectionManager.INSTANCE.getConnection();
+            stmt = conn.prepareStatement(source.sql());
+	    
+	    for(int i=0; i<source.parameters().length; i++){
+		stmt.setObject(i+1, source.parameters()[i]);
+	    }
+	    rs = stmt.executeQuery();
+            if(rs.next())
+                return load(rs);
+            return null;
+	}catch(SQLException e){
+	    throw new RuntimeException(e);
+	}finally{
+	    close(rs,stmt,conn);
+	}
     }
      private  Timestamp now(){
 	java.util.Date today = new java.util.Date();

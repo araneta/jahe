@@ -12,20 +12,23 @@ import core.helpers.HttpForm;
  * @author aldo
  */
 public class RegistrationForm extends HttpForm{
-    public String name;
+    public String firstName,lastName;
     public String email;
     public String password;
     
     public boolean validate(){
         
-        if(name==null || name.isEmpty()){
-            addError("name","name is empty");            
+        if(firstName==null || firstName.isEmpty()){
+            addError("firstName","First name is empty");            
+        }
+        if(lastName==null || lastName.isEmpty()){
+            addError("lastName","Last name is empty");            
         }
         if(email==null || email.isEmpty()){
             addError("email","email is empty");            
         }
         if(password==null || password.isEmpty()){
-            addError("password","pass is empty");            
+            addError("password","password is empty");            
         }
         return !this.hasError();
     }

@@ -23,8 +23,11 @@ public abstract class BusinessTransactionCommand extends SimpleFrontCommand{
     public static final String APP_SESSION = "App session";
     protected void startNewBusinessTransaction(){
 	HttpSession httpSession = request.getSession(true);
+        String user = request.getRemoteUser();
+        if(user==null)
+            user = "anonymouse";
 	AppSession appSession = (AppSession)httpSession.getAttribute(APP_SESSION);
-	appSession = new AppSession(request.getRemoteUser(), httpSession.getId(), new IdentityMap());
+	appSession = new AppSession(user, httpSession.getId(), new IdentityMap());
 	AppSessionManager.setSession(appSession);
 	httpSession.setAttribute(APP_SESSION, appSession);
         

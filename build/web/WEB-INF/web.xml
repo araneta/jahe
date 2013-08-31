@@ -9,6 +9,7 @@
 	</init-param>
 	<load-on-startup>1</load-on-startup>
     </servlet>
+    
     <filter>
         <filter-name>UrlRewriteFilter</filter-name>
         <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
@@ -27,7 +28,14 @@
 	<dispatcher>REQUEST</dispatcher>
 	<!--<dispatcher>FORWARD</dispatcher>-->    	
     </filter-mapping>
-    
+    <!--<servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/css/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>default</servlet-name>
+        <url-pattern>/js/*</url-pattern>
+    </servlet-mapping>-->
     <servlet-mapping>
         <servlet-name>SimpleFrontServlet</servlet-name>
         <url-pattern>/sfs/*</url-pattern>

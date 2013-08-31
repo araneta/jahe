@@ -28,7 +28,7 @@ public  class HttpForm {
     public boolean hasError(){
         return hasError;
     }
-    protected void addError(String field,String message){
+    public void addError(String field,String message){
         hasError = true;
         if(!errors.containsKey(field)){
             errors.put(field, new ArrayList<String>());
