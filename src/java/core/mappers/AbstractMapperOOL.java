@@ -8,6 +8,7 @@ import core.db.ConnectionManager;
 import core.db.KeyGenerator;
 import core.domainmodels.DomainObjectOOL;
 import core.helpers.AppSessionManager;
+import core.helpers.TimeHelper;
 import core.helpers.Version;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -133,7 +134,8 @@ public abstract class AbstractMapperOOL {
 	try{
 	    //conn = ConnectionManager.INSTANCE.getConnection();
 	    conn = AppSessionManager.getSession().getConnTrans();
-	    subject.setSystemFields(Version.create(), now(), AppSessionManager.getSession().getUser());
+            Timestamp now = TimeHelper.UTCNow();
+	    subject.setSystemFields(Version.create(), now, AppSessionManager.getSession().getUser());
 	    subject.getVersion().insert();
 	    String sql = insertStatement();
 	    System.out.println("uuh"+sql);
@@ -142,7 +144,7 @@ public abstract class AbstractMapperOOL {
 	   subject.setID(getNextId());
 	   insertStatement.setLong(1, subject.getID());
 	   insertStatement.setString(columns.length+1,AppSessionManager.getSession().getUser());
-	   insertStatement.setTimestamp(columns.length + 2, now());	   
+	   insertStatement.setTimestamp(columns.length + 2, now);	   
 	   insertStatement.setLong(columns.length + 3, subject.getVersion().getId());	   
 	  
 	   doInsert(subject,insertStatement);
@@ -162,15 +164,16 @@ public abstract class AbstractMapperOOL {
 	try{
 	    //conn = ConnectionManager.INSTANCE.getConnection();
 	    conn = AppSessionManager.getSession().getConnTrans();
+            Timestamp now = TimeHelper.UTCNow();
 	    long versionid = subject.getVersion().getId();
 	    Version v = subject.getVersion();
-	    v.setModified(now());
+	    v.setModified(now);
 	    v.setModifiedBy(AppSessionManager.getSession().getUser());
 	    v.increment();
 	    String sql = updateStatement();
 	   updateStatement = conn.prepareStatement(sql);	   	   	   
 	   updateStatement.setString(columns.length,AppSessionManager.getSession().getUser());
-	   updateStatement.setTimestamp(columns.length + 1, now());
+	   updateStatement.setTimestamp(columns.length + 1, now);
 	   updateStatement.setLong(columns.length + 2, subject.getVersion().getId());	   
 	   updateStatement.setLong(columns.length + 3, subject.getID());	
 	   updateStatement.setLong(columns.length + 4, versionid);	
@@ -302,10 +305,7 @@ public abstract class AbstractMapperOOL {
 	    close(rs,stmt,conn);
 	}
     }
-     private  Timestamp now(){
-	java.util.Date today = new java.util.Date();
-	return new java.sql.Timestamp(today.getTime());
-    }
+     
     //clean up
     public void close(ResultSet rs) {
 	if (rs != null) {

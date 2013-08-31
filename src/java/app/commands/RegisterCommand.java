@@ -36,8 +36,8 @@ public class RegisterCommand extends BusinessTransactionCommand{
     }
     
     public void saveRegistration(){
+        checkCsrfToken();        
         startNewBusinessTransaction();
-        //checkCsrfToken();        
         RegistrationForm regForm = (RegistrationForm)bind(RegistrationForm.class);
         if(!regForm.validate()){
             badRequest(regForm);

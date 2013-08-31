@@ -119,14 +119,11 @@ public class Version {
 	    
     } 	
     public static Version create(){	
-	Version version = new Version(getNextId(),Long.valueOf(0),AppSessionManager.getSession().getUser(),now());
+	Version version = new Version(getNextId(),Long.valueOf(0),AppSessionManager.getSession().getUser(),TimeHelper.UTCNow());
 	version.isNew = true;
 	return version;
     }
-    private static Timestamp now(){
-	java.util.Date today = new java.util.Date();
-	return new java.sql.Timestamp(today.getTime());
-    }
+    
     public void insert(){
 	if(isNew()){
 	    Connection conn = null;
