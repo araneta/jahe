@@ -44,5 +44,7 @@ public class FormHelper {
         if(value==null) value="";
         return "<input type=\"hidden\" name=\""+name+"\" value=\""+value+"\" />";
     }
-    
+    public String submit(String label){
+        return "<input type=\"submit\" value=\""+label+"\" />";
+    }
 }

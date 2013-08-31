@@ -24,16 +24,15 @@ public class RegisterCommand extends SimpleFrontCommand{
     }
     public void newRegistration(){
         initializeCsfrToken();
-        //render("/register/new","homepage");
-        RegistrationForm f2 = new RegistrationForm();
-        f2.name = "pak bondan";
-        render(f2,"/register/new","homepage");
+        
+        RegistrationForm regForm = new RegistrationForm();       
+        render(regForm,"/register/new","homepage");
     }
     public void saveRegistration(){
         checkCsrfToken();        
-        RegistrationForm f2 = (RegistrationForm)bind(RegistrationForm.class);
-        if(!f2.validate()){
-            badRequest(f2);
+        RegistrationForm regForm = (RegistrationForm)bind(RegistrationForm.class);
+        if(!regForm.validate()){
+            badRequest(regForm);
         }
         int y=0;
     }
