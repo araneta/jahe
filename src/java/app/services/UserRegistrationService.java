@@ -10,6 +10,7 @@ import app.entities.User;
 import app.mappers.BookMapper;
 import app.mappers.UserMapper;
 import core.helpers.AppSessionManager;
+import core.helpers.SecurityHelper;
 import core.helpers.TimeHelper;
 
 /**
@@ -31,7 +32,13 @@ public class UserRegistrationService {
             return false;
         }
         //save to db
-        user = User.create(form.email, form.firstName, form.lastName, form.password);
+        String hashedPassword;
+        try{
+            hashedPassword = SecurityHelper.getSaltedHash(form.password);
+        }catch(Exception e){
+            throw new RuntimeException(e);
+        }
+        user = User.create(form.email, form.firstName, form.lastName, hashedPassword);
         user.setCreated(TimeHelper.UTCNow());
         
         return true;
