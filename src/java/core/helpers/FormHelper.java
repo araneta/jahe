@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class FormHelper {
     protected HttpForm form;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
+    protected HttpServletRequest request;
+    protected HttpServletResponse response;
     public void init(HttpServletRequest request,HttpServletResponse response){
         this.request = request;
         this.response = response;
@@ -47,4 +47,21 @@ public class FormHelper {
     public String submit(String label){
         return "<input type=\"submit\" value=\""+label+"\" />";
     }
+    public String flashText(){
+        String text=null;
+        
+        if(request.getAttribute("flash.error")!=null){
+            text = (String)request.getAttribute("flash.error");
+        }else if(request.getAttribute("flash.success")!=null){
+            text = (String)request.getAttribute("flash.success");
+        }else if(request.getAttribute("flash.info")!=null){
+            text = (String)request.getAttribute("flash.info");
+        }else if(request.getAttribute("flash.warning")!=null){
+            text = (String)request.getAttribute("flash.warning");
+        }
+        if(text==null)
+            return "";
+        return "<div>"+text+"</div>";
+    }
+    
 }

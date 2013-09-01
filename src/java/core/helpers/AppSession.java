@@ -33,6 +33,7 @@ public class AppSession {
     private List dirtyObjects = new ArrayList();
     private List removedObjects = new ArrayList();
     private Map<Class, AbstractMapperOOL> mappers = new HashMap<Class, AbstractMapperOOL>();
+    private String lastError;
     
     public AppSession(String user, String id, IdentityMap imap){
 	this.user = user;
@@ -42,6 +43,9 @@ public class AppSession {
     }
     public Connection getConnTrans(){
 	return connTrans;
+    }
+    public String getLastError(){
+        return lastError;
     }
     protected void registerMappers(){
 	mappers.put(app.entities.Book.class, new BookMapper());
@@ -106,7 +110,7 @@ public class AppSession {
 	    mapper.update(obj);
 	}
     }
-    public void commit(){
+    public boolean commit(){
 	try{
 	    connTrans = ConnectionManager.INSTANCE.getConnection();	    
 	    connTrans.setAutoCommit(false);
@@ -114,16 +118,20 @@ public class AppSession {
 	    updateDirty();
 	    deleteRemoved();
 	    connTrans.commit();
+            return true;
 	}catch(Exception e){
 	    try{
 		if(connTrans!=null)
 		    connTrans.rollback();
-		System.out.println("rollback"+e.getMessage());
+		//System.out.println("rollback"+e.getMessage());
 		
 	    }catch(SQLException sqle){
 		throw new RuntimeException(sqle);
 	    }
-	    throw new RuntimeException(e);
+            //throw new RuntimeException(e);
+            lastError = e.getMessage();
+            return false;
+	    
 	}finally{
 	    try{
 		if(connTrans!=null){

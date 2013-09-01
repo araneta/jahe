@@ -37,8 +37,11 @@ public abstract class BusinessTransactionCommand extends SimpleFrontCommand{
 	AppSession appSession = (AppSession) httpSession.getAttribute(APP_SESSION);
 	AppSessionManager.setSession(appSession);
     }
-    protected void commitBusinessTransaction(){
-	AppSessionManager.getSession().commit();
+    protected boolean commitBusinessTransaction(){
+	return AppSessionManager.getSession().commit();
+    }
+    protected String getLastError(){
+        return AppSessionManager.getSession().getLastError();
     }
     
 }

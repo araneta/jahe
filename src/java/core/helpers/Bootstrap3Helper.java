@@ -50,4 +50,30 @@ public class Bootstrap3Helper extends FormHelper{
     public String submit(String label){
         return "<button type=\"submit\" class=\"btn btn-default\">"+label+"</button>";
     }
+    /*
+     * @type : success, info, warning, danger
+     */
+    public String alert(String type,String message){
+        return "<div class=\"alert alert-"+type+"\">"+message+"</div>";
+    }
+    public String flashText(){
+        String text=null;
+        String type = null;
+        if(request.getAttribute("error")!=null){
+            text = (String)request.getAttribute("error");
+            type = "danger";
+        }else if(request.getAttribute("success")!=null){
+            text = (String)request.getAttribute("success");
+            type = "success";
+        }else if(request.getAttribute("info")!=null){
+            text = (String)request.getAttribute("info");
+            type = "info";
+        }else if(request.getAttribute("warning")!=null){
+            text = (String)request.getAttribute("swarning");
+            type = "warning";
+        }
+        if(text==null)
+            return "";
+        return alert(type,text);
+    }
 }

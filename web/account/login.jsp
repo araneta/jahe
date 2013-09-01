@@ -2,12 +2,9 @@
 <% helper.init(request,response); %>
  <div class="container">
     <%=helper.flashText()%> 
-    <form action="/register/save" method="post">
-        <%=helper.formGroupText("firstName", "First Name :")%>
-        <%=helper.formGroupText("lastName", "Last Name :")%>
+    <form action="/login" method="post">
         <%=helper.formGroupText("email", "Email :")%>
         <%=helper.formGroupPassword("password", "Password:")%>
-        <img src="/images/photo.jpg.png" />
         <%=helper.csrfField()%>
         <%=helper.submit("Register")%>
     </form>

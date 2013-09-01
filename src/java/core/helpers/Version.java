@@ -171,6 +171,24 @@ public class Version {
 	    }
 	//}
     }
+    public void delete(){
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        try{
+            conn = AppSessionManager.getSession().getConnTrans();
+            pstmt = conn.prepareStatement(DELETE_SQL);
+            pstmt.setLong(1, id);
+            int rowCount = pstmt.executeUpdate();
+            if(rowCount==0){
+                throwConcurencyException();
+            }
+            
+        }catch(SQLException e){
+            throw new RuntimeException(e);
+        }finally{
+            close(pstmt);
+        }
+    }
     private void throwConcurencyException(){
 	Version currentVersion = load(this.getId());
 	throw new RuntimeException("version modified by "+currentVersion.modifiedBy+" at "+

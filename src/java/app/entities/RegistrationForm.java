@@ -4,8 +4,8 @@
  */
 package app.entities;
 
-import core.helpers.Form;
 import core.helpers.HttpForm;
+import org.apache.commons.validator.EmailValidator;
 
 /**
  *
@@ -29,6 +29,10 @@ public class RegistrationForm extends HttpForm{
         }
         if(password==null || password.isEmpty()){
             addError("password","password is empty");            
+        }
+        //check valid email
+        if(!org.apache.commons.validator.routines.EmailValidator.getInstance().isValid(email)){
+            addError("email","invalid email address");
         }
         return !this.hasError();
     }

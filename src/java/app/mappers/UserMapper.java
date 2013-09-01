@@ -61,7 +61,10 @@ public class UserMapper extends AbstractMapperOOL  {
     public User findByEmail(String pattern){
 	return (User)find(new FindByEmail(pattern));
     }
-    
+    public void delete(User u){
+        super.delete(u);
+        u.getVersion().delete();
+    }
     static class FindByEmail implements StatementSource{
 	private String email;
 	public FindByEmail(String email){

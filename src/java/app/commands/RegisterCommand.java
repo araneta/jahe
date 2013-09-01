@@ -48,7 +48,13 @@ public class RegisterCommand extends BusinessTransactionCommand{
             badRequest(regForm);
             return;
         }
-        commitBusinessTransaction();
+        if(!commitBusinessTransaction()){
+            flash("error",getLastError());
+            badRequest(regForm);
+            return;
+        }
+        flash("success","User created, please login");
+        redirect("/login/index");
     }
     
 }
