@@ -4,10 +4,9 @@
  */
 package app.services;
 
-import app.entities.Book;
+import app.entities.LoginForm;
 import app.entities.RegistrationForm;
 import app.entities.User;
-import app.mappers.BookMapper;
 import app.mappers.UserMapper;
 import core.helpers.AppSessionManager;
 import core.helpers.SecurityHelper;
@@ -17,7 +16,7 @@ import core.helpers.TimeHelper;
  *
  * @author aldo
  */
-public class UserRegistrationService {
+public class UserAccountService {
     UserMapper mapper;
     private UserMapper getUserMapper(){
         if(mapper==null)
@@ -45,5 +44,24 @@ public class UserRegistrationService {
     }
     public User findByEmail(String email){
        return getUserMapper().findByEmail(email);        
+    }
+    public boolean login(LoginForm form){
+        User tuser = findByEmail(form.email);
+        if(tuser==null){
+            form.addError("email", "user not found");
+            return false;
+        }
+        try{
+            if(SecurityHelper.check(form.password, tuser.getPassword())){
+                return true;
+            }else{
+                form.addError("email", "invalid password");
+                return false;
+            }
+        }catch(Exception e){
+            throw new RuntimeException(e);
+            
+        }
+        
     }
 }

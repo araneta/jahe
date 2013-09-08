@@ -17,8 +17,11 @@ public class User extends DomainObjectOOL {
     private String firstName;
     private String lastName;
     private String password;
-    
+    private Timestamp lastLogin; 
     //to load an object
+    public User(){
+        
+    }
     public  User(String email,String firstName,String lastName, String password){	
 	this.email = email;
 	this.firstName = firstName;
@@ -84,5 +87,21 @@ public class User extends DomainObjectOOL {
         this.password = password;
         markDirty();
     }
+
+    /**
+     * @return the lastLogin
+     */
+    public Timestamp getLastLogin() {
+        return lastLogin;
+    }
+
+    /**
+     * @param lastLogin the lastLogin to set
+     */
+    public void setLastLogin(Timestamp lastLogin) {
+        this.lastLogin = lastLogin;
+        markDirty();
+    }
+    
     
 }

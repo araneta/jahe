@@ -18,6 +18,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -26,46 +27,47 @@ import java.util.List;
  */
 public abstract class AbstractMapperOOL {
     protected String keyname;
-    protected String table;
-    protected String[] columns;
-    protected String loadSQL;    
-    protected String deleteSQL;    
-    protected String checkVersionSQL;
+    protected MetaDataMap dataMap;
     
-    
-   
+    protected String selectStatement(){
+        StringBuilder sb = new StringBuilder();
+	sb.append("select ");
+	sb.append(dataMap.columnList());
+        sb.append(",created_by,created_date,version_id");
+        sb.append(" from ");
+	sb.append(dataMap.getTableName());
+	sb.append(" where id=?");
+	return sb.toString();
+    }
     protected String insertStatement(){
 	StringBuilder sb = new StringBuilder();
 	sb.append("insert into ");
-	sb.append(table);
-	sb.append("(");
-	for (int i=0;i<columns.length;i++) {
-	    sb.append(columns[i]);	    	    
-	    sb.append(",");
-	}
-	sb.append("created_by,created_date,version_id) values(");
-	for (int i=0;i<columns.length;i++) {
-	    sb.append("?,");	    	    
-	}	
-	sb.append("?,?,?)");
+	sb.append(dataMap.getTableName());
+        sb.append("(");
+        sb.append(dataMap.columnList());
+        sb.append(",created_by,created_date,version_id");
+        sb.append(")");
+	sb.append(" values (?");
+	sb.append(dataMap.getInsertList());		
+	sb.append(",?,?,?)");
 	return sb.toString();
     }
-    
     protected String updateStatement(){
-	StringBuilder sb = new StringBuilder();
-	sb.append("update ");
-	sb.append(table);
-	sb.append(" set ");
-	for (int i=1;i<columns.length;i++) {//skip id col
-	    sb.append(columns[i]);
-	    sb.append("=?,");
-	}
-	//sb.setLength(sb.length()-1);
-	sb.append(" modified_by=?");
+        StringBuilder sb = new StringBuilder();
+        sb.append("UPDATE ");
+        sb.append(dataMap.getTableName());
+        sb.append(dataMap.getUpdateList()); 
+        sb.append(", modified_by=?");
 	sb.append(", modified=?");
 	sb.append(", version_id=?");
-	
-	sb.append(" where id=? and version_id=?");
+        sb.append(" where id=? and version_id=?");
+	return sb.toString();
+    }
+    protected String deleteStatement(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("delete from ");
+        sb.append(dataMap.getTableName());
+        sb.append(" where id=?");
 	return sb.toString();
     }
     
@@ -74,30 +76,15 @@ public abstract class AbstractMapperOOL {
 	return keygen.nextKey();
 	    
     }
-    protected String getColumns(){
-	StringBuilder sb = new StringBuilder();
-	String delim = "";
-	for (int i=0;i<columns.length;i++) {
-	    sb.append(delim).append(columns[i]);
-	    delim = ",";
-	}
-	return sb.toString();
-    }
-    public AbstractMapperOOL(String keyname, String table, String[] columns){
+    
+    public AbstractMapperOOL(String keyname){
 	this.keyname = keyname;
-	this.table = table;
-	this.columns =columns;
 	
-	buildStatements();
+	//buildStatements();
+        loadDataMap();
     }
-    private void buildStatements(){
-	loadSQL = "Select * from " + table +" where id=?";
-	deleteSQL = "Select * from " + table +" where id=?";
-	checkVersionSQL = "select version, modified_by, modified from " + table +" where id =?";
-    }
-    protected abstract DomainObjectOOL doLoad(Long id,ResultSet rs)throws SQLException;
-    protected abstract void doInsert(DomainObjectOOL subject, PreparedStatement stmt) throws SQLException;    
-    protected abstract void doUpdate(DomainObjectOOL subject, PreparedStatement stmt) throws SQLException;    
+    
+    protected abstract void loadDataMap();
     
     public DomainObjectOOL find(Long id){
 	DomainObjectOOL obj=null;
@@ -108,6 +95,7 @@ public abstract class AbstractMapperOOL {
 	    Connection conn = null;
 	    PreparedStatement stmt = null;
 	    ResultSet rs = null;
+            String loadSQL = selectStatement();
 	    try{
 		conn = ConnectionManager.INSTANCE.getConnection();
 		//conn = getConnection();
@@ -127,6 +115,7 @@ public abstract class AbstractMapperOOL {
 	//}
 	return obj;
     }
+    
     public Long insert(DomainObjectOOL subject){
 	
 	PreparedStatement insertStatement = null;
@@ -140,14 +129,20 @@ public abstract class AbstractMapperOOL {
 	    String sql = insertStatement();
 	    System.out.println("uuh"+sql);
 	    
-	   insertStatement = conn.prepareStatement(sql);
-	   subject.setID(getNextId());
-	   insertStatement.setLong(1, subject.getID());
-	   insertStatement.setString(columns.length+1,AppSessionManager.getSession().getUser());
-	   insertStatement.setTimestamp(columns.length + 2, now);	   
-	   insertStatement.setLong(columns.length + 3, subject.getVersion().getId());	   
+            insertStatement = conn.prepareStatement(sql);
+            int index = 0;
+            
+            subject.setID(getNextId());
+            insertStatement.setLong(++index, subject.getID());
+            for (Iterator it = dataMap.getColumns();it.hasNext();) {
+                ColumnMap column = (ColumnMap)it.next();
+                insertStatement.setObject(++index, column.getValue(subject));
+            }
+	   
+	   insertStatement.setString(++index,AppSessionManager.getSession().getUser());
+	   insertStatement.setTimestamp(++index, now);	   
+	   insertStatement.setLong(++index, subject.getVersion().getId());	   
 	  
-	   doInsert(subject,insertStatement);
 	   insertStatement.execute();
 	   AppSessionManager.getSession().getIdentityMap().put(this.keyname, subject);
 	   return subject.getID();
@@ -157,9 +152,9 @@ public abstract class AbstractMapperOOL {
 	    close(insertStatement);
 	}
     }
-    public void update(DomainObjectOOL subject){	
-	
-	PreparedStatement updateStatement = null;
+    
+    public void update(DomainObjectOOL subject){
+        PreparedStatement updateStatement = null;
 	Connection conn = null;
 	try{
 	    //conn = ConnectionManager.INSTANCE.getConnection();
@@ -171,13 +166,18 @@ public abstract class AbstractMapperOOL {
 	    v.setModifiedBy(AppSessionManager.getSession().getUser());
 	    v.increment();
 	    String sql = updateStatement();
-	   updateStatement = conn.prepareStatement(sql);	   	   	   
-	   updateStatement.setString(columns.length,AppSessionManager.getSession().getUser());
-	   updateStatement.setTimestamp(columns.length + 1, now);
-	   updateStatement.setLong(columns.length + 2, subject.getVersion().getId());	   
-	   updateStatement.setLong(columns.length + 3, subject.getID());	
-	   updateStatement.setLong(columns.length + 4, versionid);	
-	   doUpdate(subject,updateStatement);
+            updateStatement = conn.prepareStatement(sql);	   	   	   
+            int index = 0;
+            for (Iterator it = dataMap.getColumns();it.hasNext();) {
+                ColumnMap column = (ColumnMap)it.next();
+                updateStatement.setObject(++index, column.getValue(subject));
+            }
+	   updateStatement.setString(++index,AppSessionManager.getSession().getUser());
+	   updateStatement.setTimestamp(++index, now);
+	   updateStatement.setLong(++index, subject.getVersion().getId());	   
+	   updateStatement.setLong(++index, subject.getID());	
+	   updateStatement.setLong(++index, versionid);	
+	   
 	   updateStatement.execute();
 	   AppSessionManager.getSession().getIdentityMap().put(this.keyname, subject);	   
 	}catch(SQLException e){
@@ -194,7 +194,7 @@ public abstract class AbstractMapperOOL {
 	    conn = AppSessionManager.getSession().getConnTrans();
 	    object.getVersion().increment();
 	    AppSessionManager.getSession().getIdentityMap().remove(this.keyname,object.getID());
-	
+            String deleteSQL = deleteStatement();
 	    stmt = conn.prepareStatement(deleteSQL);
 	    stmt.setLong(1, object.getID().longValue());
 	    int rowCount = stmt.executeUpdate();
@@ -211,6 +211,8 @@ public abstract class AbstractMapperOOL {
 	Connection conn = null;
 	PreparedStatement stmt = null;
 	ResultSet rs = null;
+        String table = dataMap.getTableName();
+        String checkVersionSQL = "select version, modified_by, modified from " + table +" where id =?";
 	try{
 	    //conn = ConnectionManager.INSTANCE.getConnection();
 	    conn = AppSessionManager.getSession().getConnTrans();
@@ -240,14 +242,26 @@ public abstract class AbstractMapperOOL {
 	Long id = new Long(rs.getLong(1));
  	//if(AppSessionManager.getSession().getIdentityMap().contains(keyname, id))
 	//    return (DomainObjectOOL) AppSessionManager.getSession().getIdentityMap().get(keyname, id);
-	DomainObjectOOL result = doLoad(id,rs);
-	result.setID(id);
+	//DomainObjectOOL result = doLoad(id,rs);
+        DomainObjectOOL result;
+        try{
+            result = (DomainObjectOOL)dataMap.getDomainClass().newInstance();        
+        }catch(InstantiationException ie){
+            throw new RuntimeException(ie);
+        }catch(IllegalAccessException iae){
+            throw new RuntimeException(iae);
+        }
+        result.setID(id);
+        loadFields(rs, result);
+
 	//becareful		    
-	String createdBy =  rs.getString(columns.length+1);
-	Timestamp created = rs.getTimestamp(columns.length + 2);
-	String modifiedBy = rs.getString(columns.length+3);
-	Timestamp modified = rs.getTimestamp(columns.length + 4);
-	int versionid = rs.getInt(columns.length + 5);
+        int columnslength = dataMap.count();
+        
+	String createdBy =  rs.getString("created_by");
+	Timestamp created = rs.getTimestamp("created_date");
+	String modifiedBy = rs.getString("modified_by");
+	Timestamp modified = rs.getTimestamp("modified_date");
+	int versionid = rs.getInt("version_id");
 	result.setCreatedBy(createdBy);
 	result.setCreated(created);
 	result.setModified(modified);
@@ -256,6 +270,13 @@ public abstract class AbstractMapperOOL {
 	result.setVersion(version);
 	//AppSessionManager.getSession().getIdentityMap().put(keyname, result);
 	return result;
+    }
+    private void loadFields(ResultSet rs, DomainObjectOOL result) throws SQLException {
+        for (Iterator it = dataMap.getColumns();it.hasNext();) {
+            ColumnMap column = (ColumnMap)it.next();
+            Object columnValue = rs.getObject(column.getColumnName());
+            column.setField(result, columnValue);
+        }
     }
      protected List loadAll(ResultSet rs) throws SQLException{
 	List result = new ArrayList();

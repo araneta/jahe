@@ -10,10 +10,12 @@ import java.sql.ResultSet;
 import core.mappers.StatementSource;
 
 import app.entities.Book;
+import app.entities.User;
 import core.db.ConnectionManager;
 import core.db.DB;
 import core.domainmodels.DomainObjectOOL;
 import core.mappers.AbstractMapperOOL;
+import core.mappers.MetaDataMap;
 import java.util.List;
 /**
  *
@@ -25,7 +27,13 @@ public class BookMapper extends AbstractMapperOOL  {
     public static final String findAllSql = "select * from book";
    
     public BookMapper(){
-	super("book","book",COLUMNS);	
+	super("book");	
+    }
+    protected void loadDataMap() {
+        dataMap = new MetaDataMap(Book.class, "book");
+        dataMap.addColumn("title", "varchar", "title");
+        dataMap.addColumn("author", "varchar", "author");
+        
     }
     //protected String insertStatement(){
 	//return "insert into book values(?,?,?, ?,?,?,?)";

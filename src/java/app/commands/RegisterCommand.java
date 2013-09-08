@@ -7,7 +7,7 @@ package app.commands;
 import app.entities.RegistrationForm;
 import app.entities.User;
 import app.mappers.UserMapper;
-import app.services.UserRegistrationService;
+import app.services.UserAccountService;
 import core.commands.BusinessTransactionCommand;
 import core.commands.SimpleFrontCommand;
 import core.helpers.AppSessionManager;
@@ -43,7 +43,7 @@ public class RegisterCommand extends BusinessTransactionCommand{
             badRequest(regForm);
             return;
         }
-        UserRegistrationService service = new UserRegistrationService();
+        UserAccountService service = new UserAccountService();
         if(!service.register(regForm)){
             badRequest(regForm);
             return;

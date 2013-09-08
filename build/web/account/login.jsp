@@ -2,10 +2,10 @@
 <% helper.init(request,response); %>
  <div class="container">
     <%=helper.flashText()%> 
-    <form action="/login" method="post">
+    <form action="/login/verify" method="post">
         <%=helper.formGroupText("email", "Email :")%>
         <%=helper.formGroupPassword("password", "Password:")%>
         <%=helper.csrfField()%>
-        <%=helper.submit("Register")%>
+        <%=helper.submit("Login")%>
     </form>
 </div> <!-- /container -->
