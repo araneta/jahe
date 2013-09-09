@@ -5,7 +5,7 @@
 package app.commands;
 
 import app.entities.LoginForm;
-import app.entities.RegistrationForm;
+import app.entities.User;
 import app.services.UserAccountService;
 import core.commands.BusinessTransactionCommand;
 
@@ -37,10 +37,12 @@ public class LoginCommand extends BusinessTransactionCommand{
             return;
         }
         UserAccountService service = new UserAccountService();
-        if(!service.login(loginForm)){
+        User user = service.login(loginForm);
+        if(user==null){
             badRequest(loginForm);
             return;
         }
+        setActiveUser(user.getID().toString());
         if(!commitBusinessTransaction()){
             flash("error",getLastError());
             badRequest(loginForm);

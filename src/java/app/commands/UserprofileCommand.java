@@ -30,7 +30,7 @@ public class UserprofileCommand extends BusinessTransactionCommand{
         render(profileForm,"/account/profile","dashboard");
     }
     public void saveProfilePage(){
-        checkCsrfToken();        
+        checkCsrfToken();                
         startNewBusinessTransaction();
         UserProfileForm profileForm = (UserProfileForm)bind(UserProfileForm.class);
         if(!profileForm.validate()){
@@ -38,7 +38,7 @@ public class UserprofileCommand extends BusinessTransactionCommand{
             return;
         }
         UserAccountService service = new UserAccountService();
-        if(!service.update(profileForm)){
+        if(!service.update(getActiveUser(),profileForm)){
             badRequest(profileForm);
             return;
         }

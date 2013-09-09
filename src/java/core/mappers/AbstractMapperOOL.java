@@ -33,7 +33,7 @@ public abstract class AbstractMapperOOL {
         StringBuilder sb = new StringBuilder();
 	sb.append("select ");
 	sb.append(dataMap.columnList());
-        sb.append(",created_by,created_date,version_id");
+        sb.append(",created_by,created_date,modified_by,modified_date,version_id");
         sb.append(" from ");
 	sb.append(dataMap.getTableName());
 	sb.append(" where id=?");

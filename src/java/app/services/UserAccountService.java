@@ -51,21 +51,19 @@ public class UserAccountService {
     public User findByEmail(String email){
        return getUserMapper().findByEmail(email);        
     }
-    public boolean login(LoginForm form){
+    public User login(LoginForm form){
         User tuser = findByEmail(form.email);
         if(tuser==null){
             form.addError("email", "user not found");
-            return false;
+            return null;
         }
         try{
             if(SecurityHelper.check(form.password, tuser.getPassword())){
-                tuser.setLastLogin(TimeHelper.UTCNow());
-                String userid = tuser.getID().toString();
-                AppSessionManager.getSession().setUser(userid, tuser.getFirstName()+" "+tuser.getLastName());
-                return true;
+                tuser.setLastLogin(TimeHelper.UTCNow());                
+                return tuser;
             }else{
                 form.addError("email", "invalid password");
-                return false;
+                return null;
             }
         }catch(Exception e){
             throw new RuntimeException(e);
@@ -73,19 +71,11 @@ public class UserAccountService {
         }
         
     }
-    public User getActiveUser(){
-        String activeUserId = AppSessionManager.getSession().getUserId();
-        User user = getUserMapper().find(Long.parseLong(activeUserId));
-        return user;
-    }
-    public boolean update(UserProfileForm profile){
-        //get active user
-        User activeUser = getActiveUser();
+    
+    public boolean update(String activeUserId,UserProfileForm profile){                
+        User activeUser = getUserMapper().find(Long.parseLong(activeUserId));
         if(activeUser==null)
             return false;
-        if(profile.email.equals(activeUser.getEmail())){
-            return false;
-        }
         //update user data
         activeUser.setEmail(profile.email);
         activeUser.setFirstName(profile.firstName);

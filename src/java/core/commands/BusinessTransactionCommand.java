@@ -45,17 +45,18 @@ public abstract class BusinessTransactionCommand extends SimpleFrontCommand{
         return AppSessionManager.getSession().getLastError();
     }
     protected boolean checkLogin(){
-        HttpSession httpSession = request.getSession();
-        if(httpSession==null){
-            redirect("/login/index");
-            return false;
-        }
-        AppSession appSession = (AppSession) httpSession.getAttribute(APP_SESSION);
-        if(appSession==null || StringUtils.isEmpty(appSession.getUser()))
+       
+        if(StringUtils.isEmpty(getActiveUser()))
         {
             redirect("/login/index");            
             return false;
         }	
         return true;
+    }
+    public void setActiveUser(String userid){
+        request.getSession(false).setAttribute("activeuser", userid);
+    }
+    public String getActiveUser(){
+        return (String)request.getSession(false).getAttribute("activeuser");
     }
 }
