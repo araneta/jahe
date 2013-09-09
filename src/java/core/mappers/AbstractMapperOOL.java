@@ -58,7 +58,7 @@ public abstract class AbstractMapperOOL {
         sb.append(dataMap.getTableName());
         sb.append(dataMap.getUpdateList()); 
         sb.append(", modified_by=?");
-	sb.append(", modified=?");
+	sb.append(", modified_date=?");
 	sb.append(", version_id=?");
         sb.append(" where id=? and version_id=?");
 	return sb.toString();
@@ -167,6 +167,7 @@ public abstract class AbstractMapperOOL {
 	    v.increment();
 	    String sql = updateStatement();
             updateStatement = conn.prepareStatement(sql);	   	   	   
+            System.out.println(sql);
             int index = 0;
             for (Iterator it = dataMap.getColumns();it.hasNext();) {
                 ColumnMap column = (ColumnMap)it.next();

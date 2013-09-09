@@ -5,7 +5,7 @@
 package app.commands;
 
 import app.entities.LoginForm;
-import app.entities.RegistrationForm;
+import app.entities.UserProfileForm;
 import app.services.UserAccountService;
 import core.commands.BusinessTransactionCommand;
 
@@ -13,40 +13,41 @@ import core.commands.BusinessTransactionCommand;
  *
  * @author aldo
  */
-public class LoginCommand extends BusinessTransactionCommand{
+public class UserprofileCommand extends BusinessTransactionCommand{
     public void process() {
+        if(!checkLogin())return;
+        
         String method = method();
 	if(method.equals("index")){
-	    loginPage();
-	}else if(method.equals("verify")){
-	    verify();
+	    profilePage();
+	}else if(method.equals("save")){
+	    saveProfilePage();
 	}
-        
     }
-    public void loginPage(){
+    public void profilePage(){
         initializeCsfrToken();
-        LoginForm loginForm = new LoginForm();       
-        render(loginForm,"/account/login","homepage");
+        UserProfileForm profileForm = new UserProfileForm();              
+        render(profileForm,"/account/profile","dashboard");
     }
-    public void verify(){
+    public void saveProfilePage(){
         checkCsrfToken();        
         startNewBusinessTransaction();
-        LoginForm loginForm = (LoginForm)bind(LoginForm.class);
-        if(!loginForm.validate()){
-            badRequest(loginForm);
+        UserProfileForm profileForm = (UserProfileForm)bind(UserProfileForm.class);
+        if(!profileForm.validate()){
+            badRequest(profileForm);
             return;
         }
         UserAccountService service = new UserAccountService();
-        if(!service.login(loginForm)){
-            badRequest(loginForm);
+        if(!service.update(profileForm)){
+            badRequest(profileForm);
             return;
         }
         if(!commitBusinessTransaction()){
             flash("error",getLastError());
-            badRequest(loginForm);
+            badRequest(profileForm);
             return;
         }
-        flash("success","welcome");
+        flash("success","user profile updated");
         redirect("/userprofile/index");
     }
 }

@@ -58,6 +58,13 @@ public class AppSession {
     public String getUser(){
 	return user;
     }
+    public String getUserId(){
+        return id;
+    }
+    public void setUser(String id,String user){
+        this.user = user;
+        this.id = id;
+    }
     //public AbstractMapperOOL getMapper(String name){
     public AbstractMapperOOL getMapper(Class c){	
 	//if(c==app.entities.Book.class)

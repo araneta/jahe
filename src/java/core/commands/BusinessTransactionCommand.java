@@ -7,6 +7,7 @@ package core.commands;
 import core.helpers.AppSession;
 import core.helpers.AppSessionManager;
 import core.helpers.IdentityMap;
+import core.helpers.StringUtils;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import javax.servlet.ServletContext;
@@ -43,5 +44,18 @@ public abstract class BusinessTransactionCommand extends SimpleFrontCommand{
     protected String getLastError(){
         return AppSessionManager.getSession().getLastError();
     }
-    
+    protected boolean checkLogin(){
+        HttpSession httpSession = request.getSession();
+        if(httpSession==null){
+            redirect("/login/index");
+            return false;
+        }
+        AppSession appSession = (AppSession) httpSession.getAttribute(APP_SESSION);
+        if(appSession==null || StringUtils.isEmpty(appSession.getUser()))
+        {
+            redirect("/login/index");            
+            return false;
+        }	
+        return true;
+    }
 }
