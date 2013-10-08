@@ -24,7 +24,7 @@ public abstract class BusinessTransactionCommand extends SimpleFrontCommand{
     public static final String APP_SESSION = "App session";
     protected void startNewBusinessTransaction(){
 	HttpSession httpSession = request.getSession(true);
-        String user = request.getRemoteUser();
+        String user = getActiveUser();//request.getRemoteUser();
         if(user==null)
             user = "anonymouse";
 	AppSession appSession = (AppSession)httpSession.getAttribute(APP_SESSION);
