@@ -32,7 +32,7 @@ public class RegisterCommand extends BusinessTransactionCommand{
         initializeCsfrToken();
         
         RegistrationForm regForm = new RegistrationForm();       
-        render(regForm,"/register/new","homepage");
+        render(regForm,"/account/new","homepage");
     }
     
     public void saveRegistration(){
