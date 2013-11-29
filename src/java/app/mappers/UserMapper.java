@@ -29,7 +29,7 @@ public class UserMapper extends AbstractMapperOOL  {
         dataMap.addColumn("first_name", "varchar", "firstName");
         dataMap.addColumn("last_name", "varchar", "lastName");
         dataMap.addColumn("password", "varchar", "password");
-        dataMap.addColumn("last_login", "datetime", "lastLogin");
+        dataMap.addColumn("last_login", "datetime", "lastLogin");        
     }
     
     public User find(Long id){

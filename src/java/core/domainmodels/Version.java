@@ -2,11 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package core.helpers;
+package core.domainmodels;
 
+import core.app.AppSessionManager;
 import core.db.ConnectionManager;
 import core.db.DB;
 import core.db.KeyGenerator;
+import core.helpers.TimeHelper;
 import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -114,10 +114,11 @@ public class SimpleFrontServlet extends HttpServlet {
     }
     private Class getCommandClass(HttpServletRequest request){
 	Class cls = null;	
+        String dir = request.getParameter("dir");
 	String input = request.getParameter("clsname");
 	String className;
 	if(!input.isEmpty()){
-	    className = input.substring(0, 1).toUpperCase() + input.substring(1);
+	    className = input.substring(0, 1).toUpperCase() + input.substring(1);            
 	}else
 	{
 	    return core.commands.UnknownCommand.class;
@@ -125,6 +126,9 @@ public class SimpleFrontServlet extends HttpServlet {
 	//log.info("cls:"+className);
 	try
 	{	    
+            if(dir!=null && !dir.isEmpty())
+                className = dir+"."+className;
+            log.info("cls:"+className);
 	    cls = Class.forName("app.commands."+className+"Command");	    
 	}
 	catch(ClassNotFoundException e)

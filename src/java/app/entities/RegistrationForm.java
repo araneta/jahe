@@ -15,7 +15,13 @@ public class RegistrationForm extends HttpForm{
     public String firstName,lastName;
     public String email;
     public String password;
-    
+
+    /**
+     * validate registration form
+     * return true when its valid
+     * @return boolean
+     */
+    @Override
     public boolean validate(){
         
         if(firstName==null || firstName.isEmpty()){

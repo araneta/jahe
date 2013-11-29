@@ -10,7 +10,7 @@ import app.mappers.UserMapper;
 import app.services.UserAccountService;
 import core.commands.BusinessTransactionCommand;
 import core.commands.SimpleFrontCommand;
-import core.helpers.AppSessionManager;
+import core.app.AppSessionManager;
 import core.helpers.HttpForm;
 import core.helpers.TimeHelper;
 

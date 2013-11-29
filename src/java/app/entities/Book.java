@@ -7,7 +7,7 @@ package app.entities;
 import core.db.ConnectionManager;
 import core.db.KeyGenerator;
 import core.domainmodels.DomainObjectOOL;
-import core.helpers.Version;
+import core.domainmodels.Version;
 import java.sql.SQLException;
 
 /**

@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import core.domainmodels.DomainObject;
 import core.db.DB;
 import core.db.KeyGenerator;
-import core.helpers.AppSessionManager;
+import core.app.AppSessionManager;
 import java.util.ArrayList;
 import java.util.List;
 /**

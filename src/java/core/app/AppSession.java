@@ -2,13 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package core.helpers;
+package core.app;
 
 import app.mappers.BookMapper;
 import app.mappers.UserMapper;
 import core.db.ConnectionManager;
 import core.domainmodels.DomainObjectOOL;
+import core.domainmodels.IdentityMap;
 import core.mappers.AbstractMapperOOL;
+import core.mappers.RoleMapper;
+import core.mappers.UserRoleMapper;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -48,8 +51,14 @@ public class AppSession {
         return lastError;
     }
     protected void registerMappers(){
+        //TODO: put mapper on config file?
+        //core
+        mappers.put(core.entities.UserRole.class, new UserRoleMapper());
+        mappers.put(core.entities.Roles.class, new RoleMapper());
+        //app
 	mappers.put(app.entities.Book.class, new BookMapper());
         mappers.put(app.entities.User.class, new UserMapper());
+        
     }
     
     public IdentityMap getIdentityMap(){

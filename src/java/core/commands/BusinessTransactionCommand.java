@@ -4,15 +4,11 @@
  */
 package core.commands;
 
-import core.helpers.AppSession;
-import core.helpers.AppSessionManager;
-import core.helpers.IdentityMap;
+import core.app.AppSession;
+import core.app.AppSessionManager;
+import core.domainmodels.IdentityMap;
 import core.helpers.StringUtils;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import core.security.SimpleRoleCheck;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -58,5 +54,17 @@ public abstract class BusinessTransactionCommand extends SimpleFrontCommand{
     }
     public String getActiveUser(){
         return (String)request.getSession(false).getAttribute("activeuser");
+    }
+    public boolean requiredRole(String role){
+        if(!checkLogin())
+            return false;
+        SimpleRoleCheck src = new SimpleRoleCheck();
+        if(src.check(role, Long.parseLong(getActiveUser()))){
+            return true;
+        }else
+        {
+            redirect("/login/index");            
+            return false;
+        }
     }
 }

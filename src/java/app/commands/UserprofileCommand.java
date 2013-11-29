@@ -4,10 +4,11 @@
  */
 package app.commands;
 
-import app.entities.LoginForm;
+import app.entities.User;
 import app.entities.UserProfileForm;
 import app.services.UserAccountService;
 import core.commands.BusinessTransactionCommand;
+import core.entities.Roles;
 
 /**
  *
@@ -15,7 +16,8 @@ import core.commands.BusinessTransactionCommand;
  */
 public class UserprofileCommand extends BusinessTransactionCommand{
     public void process() {
-        if(!checkLogin())return;
+        startNewBusinessTransaction();        
+        if(!requiredRole("registered"))return;
         
         String method = method();
 	if(method.equals("index")){
@@ -26,12 +28,19 @@ public class UserprofileCommand extends BusinessTransactionCommand{
     }
     public void profilePage(){
         initializeCsfrToken();
-        UserProfileForm profileForm = new UserProfileForm();              
+        
+        UserProfileForm profileForm = new UserProfileForm();            
+        UserAccountService service = new UserAccountService();
+        User user = service.findByID(Long.parseLong(this.getActiveUser()));
+        profileForm.email = user.getEmail();
+        profileForm.firstName = user.getFirstName();
+        profileForm.lastName = user.getLastName();
+        
         render(profileForm,"/account/profile","dashboard");
     }
     public void saveProfilePage(){
         checkCsrfToken();                
-        startNewBusinessTransaction();
+        
         UserProfileForm profileForm = (UserProfileForm)bind(UserProfileForm.class);
         if(!profileForm.validate()){
             badRequest(profileForm);

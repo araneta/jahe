@@ -7,7 +7,7 @@ package app.commands;
 import app.entities.Book;
 import app.mappers.BookMapper;
 import core.commands.BusinessTransactionCommand;
-import core.helpers.AppSessionManager;
+import core.app.AppSessionManager;
 import java.io.IOException;
 import java.util.List;
 

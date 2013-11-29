@@ -9,7 +9,9 @@ import app.entities.RegistrationForm;
 import app.entities.User;
 import app.entities.UserProfileForm;
 import app.mappers.UserMapper;
-import core.helpers.AppSessionManager;
+import core.app.AppSession;
+import core.app.AppSessionManager;
+import core.app.BaseService;
 import core.helpers.SecurityHelper;
 import core.helpers.StringUtils;
 import core.helpers.TimeHelper;
@@ -18,11 +20,20 @@ import core.helpers.TimeHelper;
  *
  * @author aldo
  */
-public class UserAccountService {
+public class UserAccountService extends BaseService{
     UserMapper mapper;
     private UserMapper getUserMapper(){
-        if(mapper==null)
-             mapper = (UserMapper)AppSessionManager.getSession().getMapper(User.class);
+        if(mapper==null){
+            AppSession appsession = AppSessionManager.getSession();
+            if(appsession==null){
+                System.out.println("appsession is null");
+            }
+            mapper = (UserMapper)appsession.getMapper(User.class);
+        }
+        
+        if(mapper==null){
+            System.out.println("mapper is null");
+        }
         return mapper;
     }
     public String encryptPassword(String plaintextPass){
@@ -50,6 +61,10 @@ public class UserAccountService {
     }
     public User findByEmail(String email){
        return getUserMapper().findByEmail(email);        
+    }
+    public User findByID(Long id){
+        System.out.println("id:"+id);
+        return getUserMapper().find(id);
     }
     public User login(LoginForm form){
         User tuser = findByEmail(form.email);

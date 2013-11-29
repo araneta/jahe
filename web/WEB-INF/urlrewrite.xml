@@ -91,12 +91,26 @@
     eg, all requests will be checked against the condition and if matched
     request.setAttribute("browser", "moz") will be called.
 
-    -->
-    
+    -->    
+    <rule>
+        <from>^/([a-z]+)/([a-z]+)/([a-z]+)$</from>
+        <!--<to>/SimpleFrontServlet?clsname=$1&amp;methodname=$2&amp;prm=$3</to>-->
+	<to>/sfs?dir=$1&amp;clsname=$2&amp;methodname=$3</to>
+    </rule>
     <rule>
         <from>^/([a-z]+)/([a-z]+)$</from>
         <!--<to>/SimpleFrontServlet?clsname=$1&amp;methodname=$2&amp;prm=$3</to>-->
 	<to>/sfs?clsname=$1&amp;methodname=$2</to>
+    </rule>
+     <rule>
+        <from>^/([a-z]+)$</from>
+        <!--<to>/SimpleFrontServlet?clsname=$1&amp;methodname=$2&amp;prm=$3</to>-->
+	<to>/sfs?clsname=$1&amp;methodname=index</to>
+    </rule>
+    <!-- Home/root-->
+    <rule>
+        <from>^/$</from>        
+	<to>/sfs?clsname=home&amp;methodname=index</to>
     </rule>
 </urlrewrite>
 

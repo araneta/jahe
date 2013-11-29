@@ -28,7 +28,7 @@ public class ColumnMap {
     }
 
     public void setField(Object subject, Object columnValue) {
-        try {
+        try {            
             field.set(subject, columnValue);
         } catch (Exception e) {
             throw new RuntimeException(e);

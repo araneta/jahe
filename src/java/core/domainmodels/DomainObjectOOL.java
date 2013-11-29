@@ -4,8 +4,7 @@
  */
 package core.domainmodels;
 
-import core.helpers.AppSessionManager;
-import core.helpers.Version;
+import core.app.AppSessionManager;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;

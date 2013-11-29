@@ -7,9 +7,9 @@ package core.mappers;
 import core.db.ConnectionManager;
 import core.db.KeyGenerator;
 import core.domainmodels.DomainObjectOOL;
-import core.helpers.AppSessionManager;
+import core.app.AppSessionManager;
 import core.helpers.TimeHelper;
-import core.helpers.Version;
+import core.domainmodels.Version;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -294,9 +294,10 @@ public abstract class AbstractMapperOOL {
 	try{
             conn = ConnectionManager.INSTANCE.getConnection();
             stmt = conn.prepareStatement(source.sql());
-	    
-	    for(int i=0; i<source.parameters().length; i++){
-		stmt.setObject(i+1, source.parameters()[i]);
+	    if(source.parameters()!=null){
+                for(int i=0; i<source.parameters().length; i++){
+                    stmt.setObject(i+1, source.parameters()[i]);
+                }
 	    }
 	    rs = stmt.executeQuery();
 	    return loadAll(rs);
